@@ -1,0 +1,78 @@
+import { Request, Response, NextFunction } from 'express';
+import { ProductosController } from '../../controllers/productos.controller';
+import { ProductosService } from '../../services/productos.service';
+import { Pasteleria } from '../../models/pasteleria';
+
+describe('ProductosController', () => {
+  let service: jest.Mocked<Pick<ProductosService, 'obtenerTodos'>>;
+  let controller: ProductosController;
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: jest.MockedFunction<NextFunction>;
+
+  beforeEach(() => {
+    service = {
+      obtenerTodos: jest.fn(),
+    };
+
+    controller = new ProductosController(
+      service as unknown as ProductosService
+    );
+
+    req = {};
+
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+    };
+
+    next = jest.fn();
+  });
+
+  it('debe responder con los productos y estado 200', async () => {
+    const productos = [
+      new Pasteleria(1, 'Muffin de chocolate', 2500),
+      new Pasteleria(2, 'Torta selva negra', 4200),
+    ];
+
+    service.obtenerTodos.mockResolvedValue(productos);
+
+    await controller.obtenerTodos(
+      req as Request,
+      res as Response,
+      next
+    );
+
+    expect(service.obtenerTodos).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(productos);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('debe responder con una lista vacía cuando no hay productos', async () => {
+    service.obtenerTodos.mockResolvedValue([]);
+
+    await controller.obtenerTodos(
+      req as Request,
+      res as Response,
+      next
+    );
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith([]);
+  });
+
+  it('debe delegar los errores al siguiente middleware', async () => {
+    const error = new Error('Error de base de datos');
+
+    service.obtenerTodos.mockRejectedValue(error);
+
+    await controller.obtenerTodos(
+      req as Request,
+      res as Response,
+      next
+    );
+
+    expect(next).toHaveBeenCalledWith(error);
+  });
+});
