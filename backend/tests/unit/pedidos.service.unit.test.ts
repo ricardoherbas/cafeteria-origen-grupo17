@@ -77,3 +77,26 @@ describe("PedidosService.crear - producto inexistente", () => {
     expect(await repo.findAll()).toHaveLength(0);
   });
 });
+
+describe("PedidosService.cambiarEstado - reglas", () => {
+  it("lanza 404 si el pedido no existe", async () => {
+    const service = new PedidosService(new PedidosRepoMemoria(), productosRepo);
+
+    await expect(service.cambiarEstado(999, "confirmado")).rejects.toMatchObject({ status: 404 });
+  });
+
+  it.each([
+    ["confirmado", "cancelado"],
+    ["confirmado", "pendiente"],
+    ["cancelado", "pendiente"],
+    ["cancelado", "confirmado"],
+  ] as const)("%s -> %s lanza 409", async (desde, hacia) => {
+    const repo = new PedidosRepoMemoria();
+    const service = new PedidosService(repo, productosRepo);
+    const pedido = await service.crear({ items: [{ productoId: 5, cantidad: 1 }] });
+    await repo.actualizarEstado(pedido.id, desde);
+
+    await expect(service.cambiarEstado(pedido.id, hacia)).rejects.toMatchObject({ status: 409 });
+    expect((await repo.findById(pedido.id))?.estado).toBe(desde);
+  });
+});
