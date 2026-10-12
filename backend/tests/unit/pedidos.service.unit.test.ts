@@ -59,3 +59,21 @@ describe("PedidosService.cambiarEstado - transiciones válidas", () => {
     expect((await repo.findById(pedido.id))?.estado).toBe(nuevo);
   });
 });
+
+describe("PedidosService.crear - producto inexistente", () => {
+  it("lanza 404 y no guarda el pedido", async () => {
+    const repo = new PedidosRepoMemoria();
+    const service = new PedidosService(repo, productosRepo);
+
+    await expect(
+      service.crear({
+        items: [
+          { productoId: 5, cantidad: 1 },
+          { productoId: 999, cantidad: 1 },
+        ],
+      })
+    ).rejects.toMatchObject({ status: 404 });
+
+    expect(await repo.findAll()).toHaveLength(0);
+  });
+});
