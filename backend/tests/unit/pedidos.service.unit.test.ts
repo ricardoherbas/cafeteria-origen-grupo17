@@ -47,3 +47,15 @@ describe("PedidosService.crear", () => {
     expect(pedido.items[1]).toMatchObject({ productoId: 19, precioUnitario: 2500, subtotal: 2500 });
   });
 });
+
+describe("PedidosService.cambiarEstado - transiciones válidas", () => {
+  it.each(["confirmado", "cancelado"] as const)("pendiente -> %s", async (nuevo) => {
+    const repo = new PedidosRepoMemoria();
+    const service = new PedidosService(repo, productosRepo);
+    const pedido = await service.crear({ items: [{ productoId: 5, cantidad: 1 }] });
+
+    await service.cambiarEstado(pedido.id, nuevo);
+
+    expect((await repo.findById(pedido.id))?.estado).toBe(nuevo);
+  });
+});
