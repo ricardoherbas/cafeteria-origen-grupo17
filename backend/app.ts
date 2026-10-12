@@ -1,4 +1,5 @@
 import express from 'express';
+import { errorHandler } from './middlewares/error-handler';
 
 const app = express();
 
@@ -8,6 +9,7 @@ app.use(express.json());
 // app.use('/productos', productosRoutes);   // ricardo
 // app.use('/pedidos', pedidosRoutes);       // gonzalo
 // app.use('/reportes', reportesRoutes);     // celina
-// TODO: error-handler al final, despues de las rutas
+
+app.use(errorHandler);
 
 export default app;
