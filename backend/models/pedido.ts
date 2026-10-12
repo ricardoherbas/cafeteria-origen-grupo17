@@ -1,14 +1,28 @@
-﻿export interface PedidoItem {
+﻿export type EstadoPedido = "pendiente" | "confirmado" | "cancelado";
+
+// Lo que manda el cliente en POST /pedidos
+export interface PedidoItem {
   productoId: number;
   cantidad: number;
 }
 
-export type EstadoPedido = "pendiente" | "entregado" | "cancelado";
+// Lo que se guarda: el precio queda congelado al momento del pedido
+export interface PedidoItemGuardado extends PedidoItem {
+  precioUnitario: number;
+  subtotal: number;
+}
 
 export interface Pedido {
   id: number;
-  items: PedidoItem[];
+  mesaId?: number;
   estado: EstadoPedido;
+  total: number;
+  items: PedidoItemGuardado[];
 }
 
-export type PedidoConTotal = Pedido & { total: number };
+// Lo que el service le pasa al repository (ya calculado)
+export interface NuevoPedido {
+  mesaId?: number;
+  total: number;
+  items: PedidoItemGuardado[];
+}
