@@ -1,6 +1,5 @@
 ﻿import type { PedidosRepository } from "../repositories/pedidos.repository";
-import type { Pedido, PedidoItem } from "../models/pedido";
-
+import type { Pedido, PedidoItem, EstadoPedido } from "../models/pedido";
 // Lo único que el service necesita de un producto. La clase Producto de A lo cumple sola.
 export interface ProductoConPrecio {
   id: number;
@@ -37,4 +36,9 @@ export class PedidosService {
 
     return this.pedidosRepo.crear({ mesaId: datos.mesaId, total, items });
   }
+
+    async cambiarEstado(id: number, nuevo: EstadoPedido): Promise<void> {
+    await this.pedidosRepo.actualizarEstado(id, nuevo);
+  }
 }
+
