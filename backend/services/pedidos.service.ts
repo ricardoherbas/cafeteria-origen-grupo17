@@ -17,6 +17,12 @@ export interface DatosPedido {
   items: PedidoItem[];
 }
 
+const TRANSICIONES: Record<EstadoPedido, EstadoPedido[]> = {
+  pendiente: ["confirmado", "cancelado"],
+  confirmado: [],
+  cancelado: [],
+};
+
 export class PedidosService {
   constructor(
     private pedidosRepo: PedidosRepository,
@@ -42,6 +48,11 @@ export class PedidosService {
   }
 
     async cambiarEstado(id: number, nuevo: EstadoPedido): Promise<void> {
+    const pedido = await this.pedidosRepo.findById(id);
+    if (!pedido) throw new AppError("Pedido no encontrado", 404);
+    if (!TRANSICIONES[pedido.estado].includes(nuevo)) {
+      throw new AppError(`No se puede pasar de ${pedido.estado} a ${nuevo}`, 409);
+    }
     await this.pedidosRepo.actualizarEstado(id, nuevo);
   }
 }
