@@ -45,7 +45,7 @@ CREATE TABLE mesas (
 
 CREATE TABLE pedidos (
     id SERIAL PRIMARY KEY,
-    mesa_id INTEGER NOT NULL,
+    mesa_id INTEGER,
     estado VARCHAR(20) NOT NULL DEFAULT 'pendiente'
         CHECK (estado IN ('pendiente', 'confirmado', 'cancelado')),
     total NUMERIC(10,2) NOT NULL DEFAULT 0
