@@ -29,4 +29,11 @@ describe("GET /api/reportes/facturacion", () => {
     expect(respuesta.status).toBe(200);
     expect(respuesta.body).toEqual({ facturacionTotal: 18280 });
   });
+
+  test("sin pedidos cargados, devuelve facturacionTotal en 0", async () => {
+    const respuesta = await request(app).get("/api/reportes/facturacion");
+
+    expect(respuesta.status).toBe(200);
+    expect(respuesta.body).toEqual({ facturacionTotal: 0 });
+  });
 });
