@@ -83,4 +83,58 @@ describe('ProductosRepository', () => {
       expect(productos[0].calcularPrecio()).toBe(4200);
     });
   });
+
+  describe('findById', () => {
+    it('debe buscar un producto por su ID y devolver una instancia de Expreso', async () => {
+      (conexionDB.query as jest.Mock).mockResolvedValue({
+        rows: [
+          {
+            id: 1,
+            nombre: 'Expreso Pocillo',
+            tipo: 'expreso',
+            precio_base: '2500.00',
+            gramos: 18,
+            precio_por_gramo: '140.00',
+            tamanio: 'Pocillo',
+            variedad: 'Brasil',
+            acidez: 'Baja',
+            cuerpo: 'Denso',
+            notas: 'Avellana',
+          },
+        ],
+      });
+
+      const repository = new ProductosRepository();
+      const producto = await repository.findById(1);
+
+      expect(producto).toBeInstanceOf(Expreso);
+      expect(producto?.id).toBe(1);
+      expect(producto?.calcularPrecio()).toBe(5020);
+    });
+
+    it('debe devolver null cuando el producto no existe', async () => {
+      (conexionDB.query as jest.Mock).mockResolvedValue({
+        rows: [],
+      });
+
+      const repository = new ProductosRepository();
+      const producto = await repository.findById(999);
+
+      expect(producto).toBeNull();
+    });
+
+    it('debe utilizar el ID como parámetro de la consulta SQL', async () => {
+      (conexionDB.query as jest.Mock).mockResolvedValue({
+        rows: [],
+      });
+
+      const repository = new ProductosRepository();
+      await repository.findById(5);
+
+      expect(conexionDB.query).toHaveBeenCalledWith(
+        expect.stringContaining('WHERE p.id = $1'),
+        [5]
+      );
+    });
+  });
 });
