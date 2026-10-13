@@ -100,3 +100,32 @@ describe("PedidosService.cambiarEstado - reglas", () => {
     expect((await repo.findById(pedido.id))?.estado).toBe(desde);
   });
 });
+
+describe("PedidosService - consultas", () => {
+  it("listar devuelve todos los pedidos", async () => {
+    const repo = new PedidosRepoMemoria();
+    const service = new PedidosService(repo, productosRepo);
+    await service.crear({ items: [{ productoId: 5, cantidad: 1 }] });
+    await service.crear({ items: [{ productoId: 19, cantidad: 2 }] });
+
+    const pedidos = await service.listar();
+
+    expect(pedidos).toHaveLength(2);
+  });
+
+  it("obtener devuelve el pedido con su total", async () => {
+    const service = new PedidosService(new PedidosRepoMemoria(), productosRepo);
+    const creado = await service.crear({ items: [{ productoId: 19, cantidad: 2 }] });
+
+    const pedido = await service.obtener(creado.id);
+
+    expect(pedido.id).toBe(creado.id);
+    expect(pedido.total).toBe(5000);
+  });
+
+  it("obtener lanza 404 si el pedido no existe", async () => {
+    const service = new PedidosService(new PedidosRepoMemoria(), productosRepo);
+
+    await expect(service.obtener(999)).rejects.toMatchObject({ status: 404 });
+  });
+});
