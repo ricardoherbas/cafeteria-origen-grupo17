@@ -17,11 +17,17 @@ export interface DatosPedido {
   items: PedidoItem[];
 }
 
+const TRANSICIONES: Record<EstadoPedido, EstadoPedido[]> = {
+  pendiente: ["confirmado", "cancelado"],
+  confirmado: [],
+  cancelado: [],
+};
+
 export class PedidosService {
   constructor(
     private pedidosRepo: PedidosRepository,
     private productosRepo: ProductosLectura
-  ) {}
+  ) { }
 
   async crear(datos: DatosPedido): Promise<Pedido> {
     const productos = await this.productosRepo.findAll();
@@ -41,7 +47,21 @@ export class PedidosService {
     return this.pedidosRepo.crear({ mesaId: datos.mesaId, total, items });
   }
 
-    async cambiarEstado(id: number, nuevo: EstadoPedido): Promise<void> {
+  async listar(): Promise<Pedido[]> {
+    return this.pedidosRepo.findAll();
+  }
+
+  async obtener(id: number): Promise<Pedido> {
+    const pedido = await this.pedidosRepo.findById(id);
+    if (!pedido) throw new AppError("Pedido no encontrado", 404);
+    return pedido;
+  }
+
+  async cambiarEstado(id: number, nuevo: EstadoPedido): Promise<void> {
+    const pedido = await this.obtener(id);
+    if (!TRANSICIONES[pedido.estado].includes(nuevo)) {
+      throw new AppError(`No se puede pasar de ${pedido.estado} a ${nuevo}`, 409);
+    }
     await this.pedidosRepo.actualizarEstado(id, nuevo);
   }
 }
