@@ -59,4 +59,10 @@ describe('GET /api/reportes/mas-vendido', () => {
     expect(respuesta.status).toBe(200);
     expect(respuesta.body).toEqual({ tipo: 'expreso', cantidad: 2 });
   });
+    test('sin pedidos cargados, devuelve 404', async () => {
+    const respuesta = await request(app).get('/api/reportes/mas-vendido');
+
+    expect(respuesta.status).toBe(404);
+    expect(respuesta.body).toEqual({ error: 'No hay ventas registradas' });
+  });
 });
