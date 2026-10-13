@@ -7,9 +7,9 @@
         "dev": "ts-node server.ts",
         "build": "tsc",
         "start": "node dist/server.js",
-        "test": "jest",
+        "test": "jest --runInBand",
         "test:unit": "jest --selectProjects unit",
-        "test:endpoints": "jest --selectProjects endpoints"
+        "test:endpoints": "jest --selectProjects endpoints --runInBand"
     },
     "dependencies": {
         "dotenv": "^16.4.5",
