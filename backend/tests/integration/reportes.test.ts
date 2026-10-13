@@ -1,6 +1,6 @@
 import request from "supertest";
-import app from "../app";
-import conexionDB from "../config/conexion-db";
+import app from "../../app";
+import conexionDB from "../../config/conexion-db";
 
 beforeEach(async () => {
   await conexionDB.query(
