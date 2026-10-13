@@ -16,5 +16,18 @@ services:
       timeout: 5s
       retries: 10
 
+  api:
+    build: ./backend
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      PORT: 3000
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   pgdata:
