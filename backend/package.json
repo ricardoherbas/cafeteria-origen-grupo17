@@ -28,22 +28,22 @@
         "ts-node": "^10.9.2",
         "typescript": "~5.9.3"
     },
-    "jest": {
+        "jest": {
         "passWithNoTests": true,
         "projects": [
-        {
-            "displayName": "unit",
-            "preset": "ts-jest",
-            "testEnvironment": "node",
-            "testMatch": ["<rootDir>/tests/unit/**/*.test.ts"]
-        },
-        {
-            "displayName": "endpoints",
-            "preset": "ts-jest",
-            "testEnvironment": "node",
-            "testMatch": ["<rootDir>/tests/*.test.ts"],
-            "setupFilesAfterEnv": ["<rootDir>/tests/setup.ts"]
-        }
-    ]
+            {
+                "displayName": "unit",
+                "preset": "ts-jest",
+                "testEnvironment": "node",
+                "testMatch": ["<rootDir>/tests/unit/**/*.test.ts"]
+            },
+            {
+                "displayName": "endpoints",
+                "preset": "ts-jest",
+                "testEnvironment": "node",
+                "testMatch": ["<rootDir>/tests/integration/*.test.ts"],
+                "setupFilesAfterEnv": ["<rootDir>/tests/setup.ts"]
+            }
+        ]
     }
 }
