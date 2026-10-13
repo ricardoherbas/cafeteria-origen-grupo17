@@ -9,4 +9,8 @@ export class ProductosService {
   async obtenerTodos(): Promise<Producto[]> {
     return this.repository.findAll();
   }
+
+  async obtenerPorId(id: number): Promise<Producto | null> {
+    return this.repository.findById(id);
+  }
 }

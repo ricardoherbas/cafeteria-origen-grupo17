@@ -13,4 +13,8 @@ router.get('/', (req, res, next) => {
   void controller.obtenerTodos(req, res, next);
 });
 
+router.get('/:id', (req, res, next) => {
+  void controller.obtenerPorId(req, res, next);
+});
+
 export default router;

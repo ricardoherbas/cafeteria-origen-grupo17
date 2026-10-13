@@ -18,4 +18,34 @@ export class ProductosController {
       next(error);
     }
   }
+
+  async obtenerPorId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const id = Number(req.params.id);
+
+      if (!Number.isInteger(id) || id <= 0) {
+        res.status(400).json({
+          error: 'El ID del producto debe ser un entero positivo'
+        });
+        return;
+      }
+
+      const producto = await this.service.obtenerPorId(id);
+
+      if (!producto) {
+        res.status(404).json({
+          error: 'Producto no encontrado'
+        });
+        return;
+      }
+
+      res.status(200).json(producto);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
