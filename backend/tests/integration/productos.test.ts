@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '../app';
+import app from '../../app';
 
 describe('GET /api/productos', () => {
   it('debe responder con estado 200 y una lista de productos', async () => {
