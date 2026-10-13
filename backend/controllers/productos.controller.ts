@@ -6,24 +6,24 @@ export class ProductosController {
     private readonly service: ProductosService
   ) {}
 
-  async obtenerTodos(
+  obtenerTodos = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       const productos = await this.service.obtenerTodos();
       res.status(200).json(productos);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async obtenerPorId(
+  obtenerPorId = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       const id = Number(req.params.id);
 
@@ -47,5 +47,5 @@ export class ProductosController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 }
