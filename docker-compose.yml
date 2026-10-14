@@ -6,25 +6,30 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "${DB_PORT}:5432"
+      - "${POSTGRES_PORT_HOST}:${POSTGRES_PORT_CONTAINER}"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER} -d ${DB_NAME} -p ${POSTGRES_PORT_CONTAINER}"
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
 
   api:
     build: ./backend
-    env_file: .env
+    env_file:
+      - .env
     environment:
       DB_HOST: db
-      DB_PORT: 5432
-      PORT: 3000
+      DB_PORT: ${POSTGRES_PORT_CONTAINER}
+      PORT: ${API_PORT_CONTAINER}
     ports:
-      - "${PORT:-3000}:3000"
+      - "${API_PORT_HOST}:${API_PORT_CONTAINER}"
     depends_on:
       db:
         condition: service_healthy
